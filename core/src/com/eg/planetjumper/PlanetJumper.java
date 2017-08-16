@@ -22,7 +22,7 @@ import com.badlogic.gdx.physics.box2d.World;
 public class PlanetJumper extends ApplicationAdapter {
 	public static final float PPM = 16;
 	
-	private World world;
+	private static World world;
 	private Box2DDebugRenderer debugRenderer;
 	private OrthographicCamera camera;
 	private SpriteBatch batch;
@@ -45,8 +45,10 @@ public class PlanetJumper extends ApplicationAdapter {
 		
 		b = new ArrayList<ImageBody>();
 		
+		world.setContactListener(new PlanetContactListener());
+		
 		createPlanet(0,0);
-		createPlayer(0,180);
+		createPlayer(0,200);
 	}
 
 	private void createPlanet(int x, int y) 
@@ -95,15 +97,19 @@ public class PlanetJumper extends ApplicationAdapter {
 		
 		//initialize body and fixture
 		Body bod = world.createBody(def1);
-		bod.createFixture(fdef1);
-		//set velocity
-		
-		//add it to list of drawables
+		bod.createFixture(fdef1).setUserData(this);
+
+		//add it to list of drawables (as a Player body)
 		b.add(new ImageBody(bod,new Sprite(rocketImage)));
 		
 		s1.dispose();
 	}
 
+	public static World getWorld()
+	{
+		return world;
+	}
+	
 	@Override
 	public void render () 
 	{
@@ -118,8 +124,7 @@ public class PlanetJumper extends ApplicationAdapter {
 		for (ImageBody body : b)
 		{
 			body.updateImage();
-			Sprite img = body.getImg();
-			batch.draw(img, img.getX(),img.getY());
+			body.getImg().draw(batch);
 		}
 		batch.end();
 		

@@ -17,12 +17,18 @@ public class ImageBody
 
 	public void updateImage()
 	{
+		//update position and rotation (origin and size already set and don't change)
 		sprite.setPosition(body.getPosition().x * PlanetJumper.PPM + Gdx.graphics.getWidth() / 2 - sprite.getWidth() / 2, body.getPosition().y * PlanetJumper.PPM + Gdx.graphics.getHeight() / 2 - sprite.getHeight() / 2);
+		sprite.setRotation((float) Math.toDegrees(body.getAngle()));
 	}
 
 	public Sprite getImg() 
 	{
 		return sprite;
 	}
-	
+
+	public Body getBody() 
+	{
+		return body;
+	}
 }
