@@ -9,7 +9,6 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
@@ -26,9 +25,7 @@ public class LevelLoader
 		r = new Random();
 		
 		//create planets
-		createObject(0,0,3);
-		createObject(800,0,3);
-		createObject(1600,0,3);
+		reset();
 	}
 	
 	protected void createObject(int x, int y, final float velocity) 
@@ -66,5 +63,17 @@ public class LevelLoader
 				s1.dispose();
 			}
 		});
+	}
+
+	public void reset()
+	{
+		createObject(0,0,3);
+		createObject(800,0,r.nextFloat() - 3f);
+		createObject(1600,0,r.nextFloat() + 2.5f);
+	}
+
+	public void update(float f) 
+	{
+		
 	}
 }

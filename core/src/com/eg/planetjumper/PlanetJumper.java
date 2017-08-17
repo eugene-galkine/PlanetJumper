@@ -117,10 +117,28 @@ public class PlanetJumper extends ApplicationAdapter {
 			//test player death
 			if (player.getBody().getPosition().y < -80)
 			{
+				System.out.println(b.size());
 				world.destroyBody(player.getBody());
+				b.remove(player);
 				player = null;
+				
+				for (final ImageBody body : b)
+					Gdx.app.postRunnable(new Runnable() 
+					{
+						@Override
+						public void run() 
+						{
+							world.destroyBody(body.getBody());
+						}
+					});	
+				
+				b.clear();
+				level.reset();
+				
 				createPlayer();
-			}
+			} else
+				//update level to load new planets as needed
+				level.update(player.getBody().getPosition().x * PPM);
 			
 			//update camera
 			camera.position.set(player.getBody().getPosition().x * PPM + Gdx.graphics.getWidth() / 2,
