@@ -14,11 +14,9 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.physics.box2d.World;
 
 public class PlanetJumper extends ApplicationAdapter {
@@ -29,7 +27,7 @@ public class PlanetJumper extends ApplicationAdapter {
 	private Box2DDebugRenderer debugRenderer;
 	private OrthographicCamera camera;
 	private SpriteBatch batch;
-	
+	private LevelLoader level;
 	private Texture planetImage;
 	private Texture rocketImage;
 	private ArrayList<ImageBody> b;
@@ -41,48 +39,38 @@ public class PlanetJumper extends ApplicationAdapter {
 		//initialize stuff
 		batch = new SpriteBatch();
 		world = new World(new Vector2(0,-9.8f), true);
+		world.setContactListener(new PlanetContactListener());
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false);
 		debugRenderer = new Box2DDebugRenderer();
 		
 		planetImage = new Texture("planet.png");
 		rocketImage = new Texture("player.png");
-		
 		b = new ArrayList<ImageBody>();
-		
-		world.setContactListener(new PlanetContactListener());
+		level = new LevelLoader(this, planetImage);
 		
 		//create player
-		createObject(0,200,true);
-		
-		//create planets
-		createObject(0,0,false);
-		createObject(800,0,false);
-		createObject(1600,0,false);
+		createPlayer();
 	}
 
-	private void createObject(int x, int y, boolean isPlayer) 
+	protected void addImageBody(ImageBody imageBody) 
 	{
+		b.add(imageBody);
+	}
+	
+	protected void createPlayer() 
+	{
+		int x = 0;
+		int y = 200;
+		
 		//define body
 		BodyDef def1 = new BodyDef();
-		if (isPlayer)
-			def1.type = BodyType.DynamicBody;
-		else
-			def1.type = BodyType.KinematicBody;
+		def1.type = BodyType.DynamicBody;
 		def1.position.set(x/PPM,y/PPM);
 		
-		
 		//define its shape
-		Shape s1;
-		if (!isPlayer)
-		{
-			s1 = new CircleShape();
-			s1.setRadius((planetImage.getWidth()/2)/PPM);
-		} else
-		{
-			s1 = new PolygonShape();
-			((PolygonShape) s1).setAsBox((rocketImage.getWidth()/2)/PPM, (rocketImage.getHeight()/2)/PPM);
-		}
+		PolygonShape s1 = new PolygonShape();
+		s1.setAsBox((rocketImage.getWidth()/2)/PPM, (rocketImage.getHeight()/2)/PPM);
 		
 		//fixture to contain its shape
 		FixtureDef fdef1 = new FixtureDef();
@@ -91,23 +79,11 @@ public class PlanetJumper extends ApplicationAdapter {
 		
 		//initialize body and fixture
 		Body bod = world.createBody(def1);
-		
-		//set velocity
-		if (!isPlayer)
-		{
-			bod.createFixture(fdef1);
-			bod.setAngularVelocity(3);
-		}
-		else
-			bod.createFixture(fdef1).setUserData(this);
+		bod.createFixture(fdef1).setUserData(this);
 		
 		//add it to list of drawables
-		if (isPlayer)
-		{
-			player = new ImageBody(bod,new Sprite(isPlayer ? rocketImage : planetImage));
-			b.add(player);
-		} else
-			b.add(new ImageBody(bod,new Sprite(isPlayer ? rocketImage : planetImage)));
+		player = new ImageBody(bod,new Sprite(rocketImage));
+		b.add(player);
 		
 		s1.dispose();
 	}
@@ -143,7 +119,7 @@ public class PlanetJumper extends ApplicationAdapter {
 			{
 				world.destroyBody(player.getBody());
 				player = null;
-				createObject(0,200,true);
+				createPlayer();
 			}
 			
 			//update camera
