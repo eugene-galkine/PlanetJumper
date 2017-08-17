@@ -17,6 +17,7 @@ public class LevelLoader
 	private PlanetJumper planet;
 	private Random r;
 	private Texture planetImage;
+	private int pos;
 	
 	public LevelLoader(PlanetJumper main, Texture planetImage)
 	{
@@ -67,6 +68,8 @@ public class LevelLoader
 
 	public void reset()
 	{
+		pos = 800;
+		
 		createObject(0,0,3);
 		createObject(800,0,r.nextFloat() - 3f);
 		createObject(1600,0,r.nextFloat() + 2.5f);
@@ -74,6 +77,11 @@ public class LevelLoader
 
 	public void update(float f) 
 	{
-		
+		//make a new planet when needed
+		if (f >= pos)
+		{
+			createObject(pos + 1600,r.nextInt(150) - 50,pos % 1600 == 0 ? r.nextFloat() + 2.5f : r.nextFloat() - 3.5f);
+			pos += 800;
+		}
 	}
 }

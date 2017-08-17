@@ -114,14 +114,10 @@ public class PlanetJumper extends ApplicationAdapter {
 				player.getBody().applyForceToCenter(0, 2, true);
 			}
 			
-			//test player death
-			if (player.getBody().getPosition().y < -80)
+			//player death
+			if (player.getBody().getPosition().y < -60)
 			{
-				System.out.println(b.size());
-				world.destroyBody(player.getBody());
-				b.remove(player);
-				player = null;
-				
+				//destroy all planets and player
 				for (final ImageBody body : b)
 					Gdx.app.postRunnable(new Runnable() 
 					{
@@ -132,9 +128,11 @@ public class PlanetJumper extends ApplicationAdapter {
 						}
 					});	
 				
+				//reset level
 				b.clear();
 				level.reset();
 				
+				//new player
 				createPlayer();
 			} else
 				//update level to load new planets as needed
