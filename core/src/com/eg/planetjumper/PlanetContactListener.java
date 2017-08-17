@@ -27,19 +27,19 @@ public class PlanetContactListener implements ContactListener
 			//adds a joint
 			final WeldJointDef j = new WeldJointDef();
 			
-			j.bodyB = fb.getBody();
 			j.bodyA = fa.getBody();
+			j.bodyB = fb.getBody();
 			j.initialize(fa.getBody(), fb.getBody(), fa.getBody().getPosition());
 			
 			//run on ui thread
 			Gdx.app.postRunnable(new Runnable() 
 			{
-		         @Override
-		         public void run() 
-		         {
-		        	 PlanetJumper.getWorld().createJoint(j);
-		         }
-		    });	
+				@Override
+				public void run() 
+				{
+					PlanetJumper.playerJoint = PlanetJumper.getWorld().createJoint(j);
+				}
+			});	
 		}	
 	}
 
