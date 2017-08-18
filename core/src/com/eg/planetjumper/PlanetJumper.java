@@ -18,6 +18,11 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 
 public class PlanetJumper extends ApplicationAdapter {
 	public static final float PPM = 16;
@@ -28,8 +33,8 @@ public class PlanetJumper extends ApplicationAdapter {
 	private OrthographicCamera camera;
 	private SpriteBatch batch;
 	private LevelLoader level;
-	private Texture planetImage;
-	private Texture rocketImage;
+	private Texture planetImage, resetImage, rocketImage;
+	private Stage ui;
 	private ArrayList<ImageBody> b;
 	private ImageBody player;
 	
@@ -43,16 +48,55 @@ public class PlanetJumper extends ApplicationAdapter {
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false);
 		debugRenderer = new Box2DDebugRenderer();
-		
+		ui = new Stage();
 		planetImage = new Texture("planet.png");
 		rocketImage = new Texture("player.png");
+		resetImage = new Texture("reset.png");
 		b = new ArrayList<ImageBody>();
 		level = new LevelLoader(this, planetImage);
+		
+		//add reset button to the game
+		Sprite resetButton = new Sprite(resetImage);
+		resetButton.setSize(Gdx.graphics.getWidth()/14, Gdx.graphics.getWidth()/14);
+		Button btn = new Button(new SpriteDrawable(resetButton));
+		btn.setPosition(0, Gdx.graphics.getHeight() - (Gdx.graphics.getWidth()/14));
+		btn.addListener(new ClickListener()
+		{
+			@Override
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button)
+            {
+				resetGame();
+                return true;
+            }
+		});
+		ui.addActor(btn);
+		Gdx.input.setInputProcessor(ui);
 		
 		//create player
 		createPlayer();
 	}
 
+	private void resetGame() 
+	{
+		//destroy all planets and player
+		for (final ImageBody body : b)
+			Gdx.app.postRunnable(new Runnable() 
+			{
+				@Override
+				public void run() 
+				{
+					world.destroyBody(body.getBody());
+				}
+			});	
+		
+		//reset level
+		b.clear();
+		level.reset();
+		
+		//new player
+		createPlayer();
+	}
+	
 	protected void addImageBody(ImageBody imageBody) 
 	{
 		b.add(imageBody);
@@ -116,25 +160,8 @@ public class PlanetJumper extends ApplicationAdapter {
 			
 			//player death
 			if (player.getBody().getPosition().y < -60)
-			{
-				//destroy all planets and player
-				for (final ImageBody body : b)
-					Gdx.app.postRunnable(new Runnable() 
-					{
-						@Override
-						public void run() 
-						{
-							world.destroyBody(body.getBody());
-						}
-					});	
-				
-				//reset level
-				b.clear();
-				level.reset();
-				
-				//new player
-				createPlayer();
-			} else
+				resetGame();
+			else
 				//update level to load new planets as needed
 				level.update(player.getBody().getPosition().x * PPM);
 			
@@ -148,21 +175,22 @@ public class PlanetJumper extends ApplicationAdapter {
 		//draw everything
 		batch.begin();
 		for (ImageBody body : b)
-		{
-			body.updateImage();
-			body.getImg().draw(batch);
-		}
+			body.updateAndDraw(batch);
 		batch.end();
 		
+		//draw the ui
+		ui.draw();
+		
 		//draw box2d debugging
-		debugRenderer.render(world, camera.projection);
+		//debugRenderer.render(world, camera.projection);
 	}
-	
+
 	@Override
 	public void dispose () 
 	{
 		batch.dispose();
 		planetImage.dispose();
 		rocketImage.dispose();
+		resetImage.dispose();
 	}
 }
