@@ -2,7 +2,6 @@ package com.eg.planetjumper;
 
 import java.util.Random;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -14,6 +13,9 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 public class LevelLoader
 {
+	private static final int PLANET_SPACING = 1000;
+	private static final int STARTING_PLANETS = 3;
+	
 	private PlanetJumper planet;
 	private Random r;
 	private Texture planetImage;
@@ -29,8 +31,10 @@ public class LevelLoader
 		reset();
 	}
 	
-	protected void createObject(int x, int y, final float velocity) 
+	protected void createObject(int x, int y, boolean counterClockwise) 
 	{
+		float velocity = counterClockwise ? r.nextFloat() + 2.5f : r.nextFloat() - 3.5f;
+		
 		//define body
 		final BodyDef def1 = new BodyDef();
 		def1.type = BodyType.KinematicBody;
@@ -47,14 +51,14 @@ public class LevelLoader
 		fdef1.density = 1f;
 		
 		//initialize body and fixture
-		Gdx.app.postRunnable(new Runnable() 
-		{
-			@Override
-			public void run() 
-			{
+		//Gdx.app.postRunnable(new Runnable() 
+		//{
+		//	@Override
+		//	public void run() 
+		//	{		
 				Body bod  = PlanetJumper.getWorld().createBody(def1);
 				
-				//set velocity
+				//set velocity and create fixture
 				bod.createFixture(fdef1);
 				bod.setAngularVelocity(velocity);
 				
@@ -62,17 +66,17 @@ public class LevelLoader
 				planet.addImageBody(new ImageBody(bod,new Sprite(planetImage)));
 				
 				s1.dispose();
-			}
-		});
+		//	}
+		//});
 	}
 
 	public void reset()
 	{
-		pos = 800;
+		pos = PLANET_SPACING;
 		
-		createObject(0,0,3);
-		createObject(800,0,r.nextFloat() - 3f);
-		createObject(1600,0,r.nextFloat() + 2.5f);
+		createObject(0,0,true);
+		for (int i = 1; i <= STARTING_PLANETS; i++)
+			createObject(PLANET_SPACING*i,r.nextInt(150) - 50,(PLANET_SPACING*i) % (PLANET_SPACING*2) == 0);
 	}
 
 	public void update(float f) 
@@ -80,8 +84,8 @@ public class LevelLoader
 		//make a new planet when needed
 		if (f >= pos)
 		{
-			createObject(pos + 1600,r.nextInt(150) - 50,pos % 1600 == 0 ? r.nextFloat() + 2.5f : r.nextFloat() - 3.5f);
-			pos += 800;
+			createObject((pos + PLANET_SPACING * STARTING_PLANETS) - (100 + r.nextInt(200)),r.nextInt(200) - 100,(pos + PLANET_SPACING * STARTING_PLANETS) % (PLANET_SPACING*2) == 0);
+			pos += PLANET_SPACING;
 		}
 	}
 }

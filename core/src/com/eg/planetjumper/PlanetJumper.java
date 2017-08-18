@@ -13,7 +13,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
@@ -29,7 +29,7 @@ public class PlanetJumper extends ApplicationAdapter {
 	public static Joint playerJoint = null;
 	
 	private static World world;
-	private Box2DDebugRenderer debugRenderer;
+	public static float cameraZoomMod;
 	private OrthographicCamera camera;
 	private SpriteBatch batch;
 	private LevelLoader level;
@@ -47,7 +47,7 @@ public class PlanetJumper extends ApplicationAdapter {
 		world.setContactListener(new PlanetContactListener());
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false);
-		debugRenderer = new Box2DDebugRenderer();
+		cameraZoomMod = 2000f / Gdx.graphics.getWidth();
 		ui = new Stage();
 		planetImage = new Texture("planet.png");
 		rocketImage = new Texture("player.png");
@@ -57,15 +57,23 @@ public class PlanetJumper extends ApplicationAdapter {
 		
 		//add reset button to the game
 		Sprite resetButton = new Sprite(resetImage);
+		resetButton.getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		resetButton.setSize(Gdx.graphics.getWidth()/14, Gdx.graphics.getWidth()/14);
 		Button btn = new Button(new SpriteDrawable(resetButton));
-		btn.setPosition(0, Gdx.graphics.getHeight() - (Gdx.graphics.getWidth()/14));
+		btn.setPosition(5, Gdx.graphics.getHeight() - (Gdx.graphics.getWidth()/14) - 5);
 		btn.addListener(new ClickListener()
 		{
 			@Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button)
             {
-				resetGame();
+				Gdx.app.postRunnable(new Runnable() 
+				{
+					@Override
+					public void run() 
+					{	
+						resetGame();
+					}
+				});
                 return true;
             }
 		});
@@ -78,18 +86,16 @@ public class PlanetJumper extends ApplicationAdapter {
 
 	private void resetGame() 
 	{
+		if (playerJoint != null)
+			world.destroyJoint(playerJoint);
+		
 		//destroy all planets and player
 		for (final ImageBody body : b)
-			Gdx.app.postRunnable(new Runnable() 
-			{
-				@Override
-				public void run() 
-				{
-					world.destroyBody(body.getBody());
-				}
-			});	
+			if (body != null && body.getBody() != null)
+				world.destroyBody(body.getBody());
 		
-		//reset level
+		//reset variables
+		playerJoint = null;
 		b.clear();
 		level.reset();
 		
@@ -154,22 +160,23 @@ public class PlanetJumper extends ApplicationAdapter {
 			{
 				world.destroyJoint(playerJoint);
 				playerJoint = null;
-				
-				player.getBody().applyForceToCenter(0, 2, true);
 			}
 			
 			//player death
-			if (player.getBody().getPosition().y < -60)
+			if (player.getBody().getPosition().y < -50)
 				resetGame();
 			else
+			{
 				//update level to load new planets as needed
 				level.update(player.getBody().getPosition().x * PPM);
 			
-			//update camera
-			camera.position.set(player.getBody().getPosition().x * PPM + Gdx.graphics.getWidth() / 2,
-					player.getBody().getPosition().y * PPM + Gdx.graphics.getHeight() / 2, 0);
-			camera.update();
-			batch.setProjectionMatrix(camera.combined);
+				//update camera (only if player wasn't removed
+				camera.position.set(player.getBody().getPosition().x * PPM + Gdx.graphics.getWidth() / 2,
+						player.getBody().getPosition().y * PPM + Gdx.graphics.getHeight() / 2, 0);
+				camera.zoom = (player.getBody().getPosition().y > 15f ? (float)Math.pow(player.getBody().getPosition().y - 14f, 1/5f) : 1f) * cameraZoomMod;
+				camera.update();
+				batch.setProjectionMatrix(camera.combined);
+			}
 		}
 		
 		//draw everything
@@ -188,6 +195,8 @@ public class PlanetJumper extends ApplicationAdapter {
 	@Override
 	public void dispose () 
 	{
+		ui.dispose();
+		world.dispose();
 		batch.dispose();
 		planetImage.dispose();
 		rocketImage.dispose();
