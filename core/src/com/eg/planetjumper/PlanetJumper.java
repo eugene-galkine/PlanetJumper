@@ -7,8 +7,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -21,15 +24,18 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
+import com.badlogic.gdx.utils.Align;
 
 public class PlanetJumper extends ApplicationAdapter {
 	public static final float PPM = 16;
 	public static Joint playerJoint = null;
 	
 	private static World world;
-	public static float cameraZoomMod;
+	private static float cameraZoomMod;
+	
 	private OrthographicCamera camera;
 	private SpriteBatch batch;
 	private LevelLoader level;
@@ -58,9 +64,9 @@ public class PlanetJumper extends ApplicationAdapter {
 		//add reset button to the game
 		Sprite resetButton = new Sprite(resetImage);
 		resetButton.getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		resetButton.setSize(Gdx.graphics.getWidth()/14, Gdx.graphics.getWidth()/14);
+		resetButton.setSize(Gdx.graphics.getWidth()/15, Gdx.graphics.getWidth()/15);
 		Button btn = new Button(new SpriteDrawable(resetButton));
-		btn.setPosition(5, Gdx.graphics.getHeight() - (Gdx.graphics.getWidth()/14) - 5);
+		btn.setPosition(5, Gdx.graphics.getHeight() - (Gdx.graphics.getWidth()/15) - 5);
 		btn.addListener(new ClickListener()
 		{
 			@Override
@@ -77,7 +83,19 @@ public class PlanetJumper extends ApplicationAdapter {
                 return true;
             }
 		});
+		
+		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fabrik.ttf"));
+		FreeTypeFontParameter parameter = new FreeTypeFontParameter();
+		parameter.size = Gdx.graphics.getWidth() / 20;
+		BitmapFont font = generator.generateFont(parameter);
+		generator.dispose(); // don't forget to dispose to avoid memory leaks!
+		Label.LabelStyle style = new Label.LabelStyle();
+		style.font = font;
+		Label lbl = new Label("0", style);
+		lbl.setPosition(Gdx.graphics.getWidth() - lbl.getWidth() - 5, Gdx.graphics.getHeight() - lbl.getHeight());
+		lbl.setAlignment(Align.topRight);
 		ui.addActor(btn);
+		ui.addActor(lbl);
 		Gdx.input.setInputProcessor(ui);
 		
 		//create player
