@@ -31,6 +31,12 @@ public class PlanetContactListener implements ContactListener
 			j.bodyB = fb.getBody();
 			j.initialize(fa.getBody(), fb.getBody(), fa.getBody().getPosition());
 			
+			//figure out which one is the planet so we can give the player points
+			if (fa.getUserData() instanceof Planet)
+				((Planet) fa.getUserData()).land();
+			else if (fb.getUserData() instanceof Planet)
+				((Planet) fb.getUserData()).land();
+			
 			//run on ui thread
 			Gdx.app.postRunnable(new Runnable() 
 			{

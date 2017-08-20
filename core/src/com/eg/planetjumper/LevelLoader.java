@@ -50,24 +50,20 @@ public class LevelLoader
 		fdef1.shape = s1;
 		fdef1.density = 1f;
 		
-		//initialize body and fixture
-		//Gdx.app.postRunnable(new Runnable() 
-		//{
-		//	@Override
-		//	public void run() 
-		//	{		
-				Body bod  = PlanetJumper.getWorld().createBody(def1);
-				
-				//set velocity and create fixture
-				bod.createFixture(fdef1);
-				bod.setAngularVelocity(velocity);
-				
-				//add it to list of drawables
-				planet.addImageBody(new ImageBody(bod,new Sprite(planetImage)));
-				
-				s1.dispose();
-		//	}
-		//});
+		//initialize body and fixture	
+		Body bod  = PlanetJumper.getWorld().createBody(def1);
+		
+		//set velocity and create fixture
+		bod.createFixture(fdef1);
+		bod.setAngularVelocity(velocity);
+		
+		//add it to list of drawables, this first planet should just be an ImageBody so we don't give points for landing on the first planet
+		if (x == 0)
+			planet.addImageBody(new ImageBody(bod,new Sprite(planetImage)));
+		else
+			planet.addImageBody(new Planet(bod,new Sprite(planetImage)));
+		
+		s1.dispose();
 	}
 
 	public void reset()

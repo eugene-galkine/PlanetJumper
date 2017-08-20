@@ -7,11 +7,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -24,13 +21,11 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
-import com.badlogic.gdx.utils.Align;
 
 public class PlanetJumper extends ApplicationAdapter {
-	public static final float PPM = 16;
+	public static final float PPM = 20;
 	public static Joint playerJoint = null;
 	
 	private static World world;
@@ -61,7 +56,7 @@ public class PlanetJumper extends ApplicationAdapter {
 		b = new ArrayList<ImageBody>();
 		level = new LevelLoader(this, planetImage);
 		
-		//add reset button to the game
+		//set up the UI
 		Sprite resetButton = new Sprite(resetImage);
 		resetButton.getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		resetButton.setSize(Gdx.graphics.getWidth()/15, Gdx.graphics.getWidth()/15);
@@ -84,18 +79,8 @@ public class PlanetJumper extends ApplicationAdapter {
             }
 		});
 		
-		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fabrik.ttf"));
-		FreeTypeFontParameter parameter = new FreeTypeFontParameter();
-		parameter.size = Gdx.graphics.getWidth() / 20;
-		BitmapFont font = generator.generateFont(parameter);
-		generator.dispose(); // don't forget to dispose to avoid memory leaks!
-		Label.LabelStyle style = new Label.LabelStyle();
-		style.font = font;
-		Label lbl = new Label("0", style);
-		lbl.setPosition(Gdx.graphics.getWidth() - lbl.getWidth() - 5, Gdx.graphics.getHeight() - lbl.getHeight());
-		lbl.setAlignment(Align.topRight);
 		ui.addActor(btn);
-		ui.addActor(lbl);
+		ui.addActor(ScoreHandler.getInstance().initiate());
 		Gdx.input.setInputProcessor(ui);
 		
 		//create player
@@ -116,6 +101,7 @@ public class PlanetJumper extends ApplicationAdapter {
 		playerJoint = null;
 		b.clear();
 		level.reset();
+		ScoreHandler.getInstance().reset();
 		
 		//new player
 		createPlayer();
