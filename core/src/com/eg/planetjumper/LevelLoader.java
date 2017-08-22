@@ -49,6 +49,7 @@ public class LevelLoader
 		final FixtureDef fdef1 = new FixtureDef();
 		fdef1.shape = s1;
 		fdef1.density = 1f;
+		//trick to get fix the player from sticking to the planet sometimes
 		fdef1.filter.categoryBits = 0x0002;
 		fdef1.filter.maskBits = 0x0001 | 0x0003;
 		
@@ -74,7 +75,7 @@ public class LevelLoader
 		
 		createObject(0,0,true);
 		for (int i = 1; i <= STARTING_PLANETS; i++)
-			createObject(PLANET_SPACING*i,r.nextInt(150) - 50,(PLANET_SPACING*i) % (PLANET_SPACING*2) == 0);
+			createObject(PLANET_SPACING*i,r.nextInt(100) - 50,(PLANET_SPACING*i) % (PLANET_SPACING*2) == 0);
 	}
 
 	public void update(float f) 
