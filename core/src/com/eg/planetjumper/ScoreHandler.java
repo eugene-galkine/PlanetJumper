@@ -1,6 +1,7 @@
 package com.eg.planetjumper;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -14,6 +15,7 @@ public class ScoreHandler
 	
 	private int score;
 	private Label scoreLabel;
+	private Sound landingSfx;
 	
 	private ScoreHandler()
 	{
@@ -25,8 +27,10 @@ public class ScoreHandler
 		return instance;
 	}
 	
-	public Label initiate()
+	public Label initiate(Sound sfx)
 	{
+		landingSfx = sfx;
+		
 		//set up the label
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fabrik.ttf"));
 		FreeTypeFontParameter parameter = new FreeTypeFontParameter();
@@ -46,6 +50,7 @@ public class ScoreHandler
 	public void getPoints()
 	{
 		//give player points
+		landingSfx.play();
 		score++;
 		scoreLabel.setText(score + "");
 	}

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -38,6 +39,8 @@ public class PlanetJumper extends ApplicationAdapter {
 	private Stage ui;
 	private ArrayList<ImageBody> b;
 	private ImageBody player;
+	private Sound failSound, jumpSound, landSound;
+	private boolean falling;
 	
 	@Override
 	public void create () 
@@ -55,6 +58,10 @@ public class PlanetJumper extends ApplicationAdapter {
 		resetImage = new Texture("reset.png");
 		b = new ArrayList<ImageBody>();
 		level = new LevelLoader(this, planetImage);
+		failSound = Gdx.audio.newSound(Gdx.files.internal("sfx/fall.wav"));
+		jumpSound = Gdx.audio.newSound(Gdx.files.internal("sfx/jump.wav"));
+		landSound = Gdx.audio.newSound(Gdx.files.internal("sfx/landing.wav"));
+		falling = false;
 		
 		//set up the UI
 		Sprite resetButton = new Sprite(resetImage);
@@ -80,7 +87,7 @@ public class PlanetJumper extends ApplicationAdapter {
 		});
 		
 		ui.addActor(btn);
-		ui.addActor(ScoreHandler.getInstance().initiate());
+		ui.addActor(ScoreHandler.getInstance().initiate(landSound));
 		Gdx.input.setInputProcessor(ui);
 		
 		//create player
@@ -102,7 +109,8 @@ public class PlanetJumper extends ApplicationAdapter {
 		b.clear();
 		level.reset();
 		ScoreHandler.getInstance().reset();
-		
+		falling = false;	
+	
 		//new player
 		createPlayer();
 	}
@@ -164,11 +172,17 @@ public class PlanetJumper extends ApplicationAdapter {
 			{
 				world.destroyJoint(playerJoint);
 				playerJoint = null;
+				jumpSound.play();
 			}
 			
 			//player death
 			if (player.getBody().getPosition().y < -50)
 				resetGame();
+			else if (player.getBody().getPosition().y < -30 && !falling)
+			{
+				falling = true;
+				failSound.play();
+			}
 			else
 			{
 				//update level to load new planets as needed
