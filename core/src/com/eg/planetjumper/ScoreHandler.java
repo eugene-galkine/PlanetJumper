@@ -34,7 +34,7 @@ public class ScoreHandler
 		//set up the label
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fabrik.ttf"));
 		FreeTypeFontParameter parameter = new FreeTypeFontParameter();
-		parameter.size = Gdx.graphics.getWidth() / 20;
+		parameter.size = Gdx.graphics.getWidth() / 18;
 		BitmapFont font = generator.generateFont(parameter);
 		generator.dispose(); // don't forget to dispose to avoid memory leaks!
 		Label.LabelStyle style = new Label.LabelStyle();

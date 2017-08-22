@@ -49,6 +49,8 @@ public class LevelLoader
 		final FixtureDef fdef1 = new FixtureDef();
 		fdef1.shape = s1;
 		fdef1.density = 1f;
+		fdef1.filter.categoryBits = 0x0002;
+		fdef1.filter.maskBits = 0x0001 | 0x0003;
 		
 		//initialize body and fixture	
 		Body bod  = PlanetJumper.getWorld().createBody(def1);

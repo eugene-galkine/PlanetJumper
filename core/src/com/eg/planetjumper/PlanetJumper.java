@@ -15,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
@@ -138,6 +139,8 @@ public class PlanetJumper extends ApplicationAdapter {
 		FixtureDef fdef1 = new FixtureDef();
 		fdef1.shape = s1;
 		fdef1.density = 1f;
+		fdef1.filter.categoryBits = 0x0001;
+		fdef1.filter.maskBits = 0x0002 | 0x0003;
 		
 		//initialize body and fixture
 		Body bod = world.createBody(def1);
@@ -173,6 +176,30 @@ public class PlanetJumper extends ApplicationAdapter {
 				world.destroyJoint(playerJoint);
 				playerJoint = null;
 				jumpSound.play();
+				//add a little bit of force to our block just for fun
+				player.getBody().applyForceToCenter(1, 1, true);
+				//set filter to prevent us from getting stuck
+				Filter filter = player.getBody().getFixtureList().get(0).getFilterData();
+				filter.categoryBits = 0x0004;
+				player.getBody().getFixtureList().get(0).setFilterData(filter);
+				
+				new Thread()
+				{
+					@Override
+					public void run()
+					{
+						try 
+						{
+							sleep(150);
+						} catch (InterruptedException e) 
+						{
+							e.printStackTrace();
+						}
+						Filter filter = player.getBody().getFixtureList().get(0).getFilterData();
+						filter.categoryBits = 0x0001;
+						player.getBody().getFixtureList().get(0).setFilterData(filter);
+					}
+				}.start();;
 			}
 			
 			//player death

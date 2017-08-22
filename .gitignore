@@ -128,3 +128,4 @@ android/local.properties
 android/gradlew
 android/gradle/wrapper/gradle-wrapper.properties
 *.jar
+android/gradlew.bat
