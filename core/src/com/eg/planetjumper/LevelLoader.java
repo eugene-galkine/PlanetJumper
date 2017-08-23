@@ -17,16 +17,16 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 public class LevelLoader
 {
-	private static final int PLANET_SPACING = 1000;
+	private static final int PLANET_SPACING = 1400;
 	private static final int STARTING_PLANETS = 3;
 	
 	private PlanetJumper planet;
 	private Random r;
-	private Texture planetImage;
+	private Texture planetImage[];
 	private int pos;
 	private RayHandler rayHandler;
 	
-	public LevelLoader(PlanetJumper main, Texture planetImage, RayHandler rayHandle)
+	public LevelLoader(PlanetJumper main, Texture planetImage[], RayHandler rayHandle)
 	{
 		planet = main;
 		this.planetImage = planetImage;
@@ -42,6 +42,12 @@ public class LevelLoader
 	protected void createObject(int x, int y, boolean counterClockwise) 
 	{
 		float velocity = counterClockwise ? r.nextFloat() + 2.5f : r.nextFloat() - 3.5f;
+		Texture image;
+		
+		if (x == 0)
+			image = planetImage[12];
+		else
+			image = planetImage[r.nextInt(planetImage.length)];
 		
 		//define body
 		final BodyDef def1 = new BodyDef();
@@ -51,7 +57,7 @@ public class LevelLoader
 		//define its shape
 		final Shape s1;
 		s1 = new CircleShape();
-		s1.setRadius((planetImage.getWidth()/2)/PlanetJumper.PPM);
+		s1.setRadius((image.getWidth()/2)/PlanetJumper.PPM);
 		
 		//fixture to contain its shape
 		final FixtureDef fdef1 = new FixtureDef();
@@ -70,9 +76,9 @@ public class LevelLoader
 		
 		//add it to list of drawables, this first planet should just be an ImageBody so we don't give points for landing on the first planet
 		if (x == 0)
-			planet.addImageBody(new ImageBody(bod,new Sprite(planetImage)));
+			planet.addImageBody(new ImageBody(bod,new Sprite(image)));
 		else
-			planet.addImageBody(new Planet(bod,new Sprite(planetImage)));
+			planet.addImageBody(new Planet(bod,new Sprite(image)));
 		
 		s1.dispose();
 	}
@@ -83,8 +89,9 @@ public class LevelLoader
 		pos = PLANET_SPACING;
 		
 		createObject(0,0,true);
-		makeStars(-1000);
+		makeStars(-3000);
 		makeStars(-2000);
+		makeStars(-1000);
 		makeStars(0);
 		for (int i = 1; i <= STARTING_PLANETS; i++)
 		{
@@ -99,7 +106,7 @@ public class LevelLoader
 		if (f >= pos)
 		{
 			makeStars(pos + PLANET_SPACING * STARTING_PLANETS);
-			createObject((pos + PLANET_SPACING * STARTING_PLANETS) - (100 + r.nextInt(200)),r.nextInt(200) - 100,(pos + PLANET_SPACING * STARTING_PLANETS) % (PLANET_SPACING*2) == 0);
+			createObject((pos + PLANET_SPACING * STARTING_PLANETS) - (100 + r.nextInt(200)),r.nextInt(300) - 100,(pos + PLANET_SPACING * STARTING_PLANETS) % (PLANET_SPACING*2) == 0);
 			pos += PLANET_SPACING;
 		}
 	}
@@ -107,11 +114,11 @@ public class LevelLoader
 	private void makeStars(int x)
 	{
 		//make some random stars
-		for (int i = 0; i < 7; i++)
+		for (int i = 0; i < 14; i++)
 			new PointLight(rayHandler, r.nextInt(5) + 5, 
 					new Color((r.nextInt(3) + 8) / 10f, (r.nextInt(6) + 5) / 10f, (r.nextInt(5) + 6) / 10f, 1), 
 					100 + r.nextInt(120), 
 					r.nextInt(PLANET_SPACING) + x, 
-					r.nextInt(5000) - 1500);
+					r.nextInt(15000) - 1500);
 	}
 }

@@ -35,12 +35,13 @@ public class PlanetJumper extends ApplicationAdapter {
 	private OrthographicCamera camera;
 	private SpriteBatch batch;
 	private LevelLoader level;
-	private Texture planetImage, resetImage, rocketImage;
+	private Texture resetImage, rocketImage;
 	private Stage ui;
 	private ArrayList<ImageBody> b;
 	private Player player;
 	private RayHandler rayHandler;
 	private World lightWorld;
+	private Texture planetImages[];
 	
 	@Override
 	public void create () 
@@ -54,12 +55,14 @@ public class PlanetJumper extends ApplicationAdapter {
 		camera.setToOrtho(false);
 		cameraZoomMod = 2500f / Gdx.graphics.getWidth();
 		ui = new Stage();
-		planetImage = new Texture("planet.png");
+		planetImages = new Texture[15];
+		for (int i = 0; i < 15; i++)
+			planetImages[i] = new Texture("planets/planet_" + (i + 34) + ".png");
 		rocketImage = new Texture("player.png");
 		resetImage = new Texture("reset.png");
 		b = new ArrayList<ImageBody>();
 		rayHandler = new RayHandler(lightWorld);
-		level = new LevelLoader(this, planetImage, rayHandler);
+		level = new LevelLoader(this, planetImages, rayHandler);
 		
 		//set up the UI
 		Sprite resetButton = new Sprite(resetImage);
@@ -120,7 +123,7 @@ public class PlanetJumper extends ApplicationAdapter {
 	private void createPlayer() 
 	{
 		int x = 0;
-		int y = 200;
+		int y = 300;
 		
 		//define body
 		BodyDef def1 = new BodyDef();
@@ -168,7 +171,7 @@ public class PlanetJumper extends ApplicationAdapter {
 		if (player != null)
 		{
 			//player death
-			if (player.getBody().getPosition().y < -50)
+			if (player.getBody().getPosition().y < -60)
 				resetGame();
 			
 			//update level to load new planets as needed
@@ -204,7 +207,8 @@ public class PlanetJumper extends ApplicationAdapter {
 		ui.dispose();
 		world.dispose();
 		batch.dispose();
-		planetImage.dispose();
+		for (int i = 0; i < planetImages.length; i++)
+			planetImages[i].dispose();
 		rocketImage.dispose();
 		resetImage.dispose();
 	}

@@ -53,7 +53,7 @@ public class Player extends ImageBody
 		} 
 		
 		
-		if (getBody().getPosition().y < -30 && !falling)
+		if (getBody().getPosition().y < -40 && !falling)
 		{
 			falling = true;
 			SoundHandler.getIntance().playFall();
