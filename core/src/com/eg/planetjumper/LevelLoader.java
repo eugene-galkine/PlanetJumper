@@ -17,7 +17,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 public class LevelLoader
 {
-	private static final int PLANET_SPACING = 1400;
+	private static final int PLANET_SPACING = 1600;
 	private static final int STARTING_PLANETS = 3;
 	
 	private PlanetJumper planet;

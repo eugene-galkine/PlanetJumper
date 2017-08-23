@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -21,8 +22,10 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
+
 import box2dLight.RayHandler;
 
 public class PlanetJumper extends ApplicationAdapter {
@@ -30,12 +33,13 @@ public class PlanetJumper extends ApplicationAdapter {
 	public static Joint playerJoint = null;
 	
 	private static World world;
+	private static Preferences prefs;
 	
 	private float cameraZoomMod;
 	private OrthographicCamera camera;
 	private SpriteBatch batch;
 	private LevelLoader level;
-	private Texture resetImage, rocketImage;
+	private Texture resetImage, rocketImage, muteImage, soundImage;
 	private Stage ui;
 	private ArrayList<ImageBody> b;
 	private Player player;
@@ -53,21 +57,30 @@ public class PlanetJumper extends ApplicationAdapter {
 		world.setContactListener(new PlanetContactListener());
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false);
-		cameraZoomMod = 2500f / Gdx.graphics.getWidth();
+		cameraZoomMod = 3000f / Gdx.graphics.getWidth();
 		ui = new Stage();
 		planetImages = new Texture[15];
 		for (int i = 0; i < 15; i++)
-			planetImages[i] = new Texture("planets/planet_" + (i + 34) + ".png");
-		rocketImage = new Texture("player.png");
-		resetImage = new Texture("reset.png");
+			planetImages[i] = new Texture(Gdx.files.internal("planets/planet_" + (i + 34) + ".png"));
+		rocketImage = new Texture(Gdx.files.internal("player.png"));
+		resetImage = new Texture(Gdx.files.internal("reset.png"));
+		muteImage = new Texture(Gdx.files.internal("mute.png"));
+		soundImage = new Texture(Gdx.files.internal("sound.png"));
 		b = new ArrayList<ImageBody>();
 		rayHandler = new RayHandler(lightWorld);
 		level = new LevelLoader(this, planetImages, rayHandler);
+		prefs = Gdx.app.getPreferences("com.eg.planetjumper");
 		
 		//set up the UI
 		Sprite resetButton = new Sprite(resetImage);
+		final Sprite muteButton = new Sprite(muteImage);
+		final Sprite soundButton = new Sprite(soundImage);
 		resetButton.getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		resetButton.setSize(Gdx.graphics.getWidth()/15, Gdx.graphics.getWidth()/15);
+		muteButton.getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		muteButton.setSize(Gdx.graphics.getWidth()/18, Gdx.graphics.getWidth()/18);
+		soundButton.getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		soundButton.setSize(Gdx.graphics.getWidth()/18, Gdx.graphics.getWidth()/18);
 		Button btn = new Button(new SpriteDrawable(resetButton));
 		btn.setPosition(5, Gdx.graphics.getHeight() - (Gdx.graphics.getWidth()/15) - 5);
 		btn.addListener(new ClickListener()
@@ -86,8 +99,20 @@ public class PlanetJumper extends ApplicationAdapter {
                 return true;
             }
 		});
-		
+		final ImageButton btnM = new ImageButton(new SpriteDrawable(soundButton), new SpriteDrawable(muteButton), new SpriteDrawable(muteButton));
+		btnM.setPosition(Gdx.graphics.getWidth() - (Gdx.graphics.getWidth()/18) - 5, Gdx.graphics.getHeight() - (Gdx.graphics.getWidth()/18) - 5);
+		btnM.setChecked(SoundHandler.getIntance().getToggle());
+		btnM.addListener(new ClickListener()
+		{
+			@Override
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button)
+            {
+				btnM.setChecked(!SoundHandler.getIntance().toggleSound());
+                return true;
+            }
+		});
 		ui.addActor(btn);
+		ui.addActor(btnM);
 		ui.addActor(ScoreHandler.getInstance().initiate());
 		Gdx.input.setInputProcessor(ui);
 		
@@ -158,6 +183,11 @@ public class PlanetJumper extends ApplicationAdapter {
 		return world;
 	}
 	
+	public static Preferences getPreferences()
+	{
+		return prefs;
+	}
+	
 	@Override
 	public void render () 
 	{
@@ -202,14 +232,18 @@ public class PlanetJumper extends ApplicationAdapter {
 	@Override
 	public void dispose () 
 	{
+		prefs.flush();
 		SoundHandler.getIntance().dispose();
 		rayHandler.dispose();
 		ui.dispose();
 		world.dispose();
+		lightWorld.dispose();
 		batch.dispose();
 		for (int i = 0; i < planetImages.length; i++)
 			planetImages[i].dispose();
 		rocketImage.dispose();
 		resetImage.dispose();
+		muteImage.dispose();
+		soundImage.dispose();
 	}
 }

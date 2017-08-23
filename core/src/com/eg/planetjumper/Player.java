@@ -25,8 +25,7 @@ public class Player extends ImageBody
 			PlanetJumper.getWorld().destroyJoint(PlanetJumper.playerJoint);
 			PlanetJumper.playerJoint = null;
 			SoundHandler.getIntance().playJump();
-			//add a little bit of force to our block just for fun
-			getBody().applyForceToCenter(1, 1, true);
+
 			//set filter to prevent us from getting stuck
 			Filter filter = getBody().getFixtureList().get(0).getFilterData();
 			filter.categoryBits = 0x0004;

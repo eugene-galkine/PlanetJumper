@@ -37,7 +37,7 @@ public class ScoreHandler
 		style.font = font;
 		style.fontColor = Color.YELLOW;
 		scoreLabel = new Label("0", style);
-		scoreLabel.setPosition(Gdx.graphics.getWidth() - scoreLabel.getWidth() - 5, Gdx.graphics.getHeight() - scoreLabel.getHeight());
+		scoreLabel.setPosition(Gdx.graphics.getWidth() - scoreLabel.getWidth() - (Gdx.graphics.getWidth()/15) - 10, Gdx.graphics.getHeight() - scoreLabel.getHeight());
 		scoreLabel.setAlignment(Align.topRight);
 		
 		return scoreLabel;
