@@ -2,6 +2,10 @@ package com.eg.planetjumper;
 
 import java.util.Random;
 
+import box2dLight.PointLight;
+import box2dLight.RayHandler;
+
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -20,12 +24,16 @@ public class LevelLoader
 	private Random r;
 	private Texture planetImage;
 	private int pos;
+	private RayHandler rayHandler;
 	
-	public LevelLoader(PlanetJumper main, Texture planetImage)
+	public LevelLoader(PlanetJumper main, Texture planetImage, RayHandler rayHandle)
 	{
 		planet = main;
 		this.planetImage = planetImage;
 		r = new Random();
+		rayHandler = rayHandle;
+		rayHandler.setBlur(false);
+		rayHandler.setShadows(true);
 		
 		//create planets
 		reset();
@@ -71,11 +79,18 @@ public class LevelLoader
 
 	public void reset()
 	{
+		rayHandler.removeAll();
 		pos = PLANET_SPACING;
 		
 		createObject(0,0,true);
+		makeStars(-1000);
+		makeStars(-2000);
+		makeStars(0);
 		for (int i = 1; i <= STARTING_PLANETS; i++)
+		{
 			createObject(PLANET_SPACING*i,r.nextInt(100) - 50,(PLANET_SPACING*i) % (PLANET_SPACING*2) == 0);
+			makeStars(PLANET_SPACING * i); 
+		}
 	}
 
 	public void update(float f) 
@@ -83,8 +98,20 @@ public class LevelLoader
 		//make a new planet when needed
 		if (f >= pos)
 		{
+			makeStars(pos + PLANET_SPACING * STARTING_PLANETS);
 			createObject((pos + PLANET_SPACING * STARTING_PLANETS) - (100 + r.nextInt(200)),r.nextInt(200) - 100,(pos + PLANET_SPACING * STARTING_PLANETS) % (PLANET_SPACING*2) == 0);
 			pos += PLANET_SPACING;
 		}
+	}
+	
+	private void makeStars(int x)
+	{
+		//make some random stars
+		for (int i = 0; i < 7; i++)
+			new PointLight(rayHandler, r.nextInt(5) + 5, 
+					new Color((r.nextInt(3) + 8) / 10f, (r.nextInt(6) + 5) / 10f, (r.nextInt(5) + 6) / 10f, 1), 
+					100 + r.nextInt(120), 
+					r.nextInt(PLANET_SPACING) + x, 
+					r.nextInt(5000) - 1500);
 	}
 }

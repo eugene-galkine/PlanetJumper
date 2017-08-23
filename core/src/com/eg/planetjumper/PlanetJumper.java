@@ -23,6 +23,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
+import box2dLight.RayHandler;
 
 public class PlanetJumper extends ApplicationAdapter {
 	public static final float PPM = 20;
@@ -38,6 +39,8 @@ public class PlanetJumper extends ApplicationAdapter {
 	private Stage ui;
 	private ArrayList<ImageBody> b;
 	private Player player;
+	private RayHandler rayHandler;
+	private World lightWorld;
 	
 	@Override
 	public void create () 
@@ -45,16 +48,18 @@ public class PlanetJumper extends ApplicationAdapter {
 		//initialize stuff
 		batch = new SpriteBatch();
 		world = new World(new Vector2(0,-9.8f), true);
+		lightWorld = new World(new Vector2(0, 0), true);
 		world.setContactListener(new PlanetContactListener());
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false);
-		cameraZoomMod = 2000f / Gdx.graphics.getWidth();
+		cameraZoomMod = 2500f / Gdx.graphics.getWidth();
 		ui = new Stage();
 		planetImage = new Texture("planet.png");
 		rocketImage = new Texture("player.png");
 		resetImage = new Texture("reset.png");
 		b = new ArrayList<ImageBody>();
-		level = new LevelLoader(this, planetImage);
+		rayHandler = new RayHandler(lightWorld);
+		level = new LevelLoader(this, planetImage, rayHandler);
 		
 		//set up the UI
 		Sprite resetButton = new Sprite(resetImage);
@@ -177,6 +182,10 @@ public class PlanetJumper extends ApplicationAdapter {
 			batch.setProjectionMatrix(camera.combined);
 		}
 		
+		//draw lights (stars)
+		rayHandler.setCombinedMatrix(camera);
+		rayHandler.updateAndRender();
+		
 		//draw everything
 		batch.begin();
 		for (ImageBody body : b)
@@ -191,6 +200,7 @@ public class PlanetJumper extends ApplicationAdapter {
 	public void dispose () 
 	{
 		SoundHandler.getIntance().dispose();
+		rayHandler.dispose();
 		ui.dispose();
 		world.dispose();
 		batch.dispose();
