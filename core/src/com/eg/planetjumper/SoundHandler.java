@@ -1,6 +1,5 @@
 package com.eg.planetjumper;
 
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 

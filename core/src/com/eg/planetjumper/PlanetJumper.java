@@ -148,7 +148,7 @@ public class PlanetJumper extends ApplicationAdapter {
 	private void createPlayer() 
 	{
 		int x = 0;
-		int y = 300;
+		int y = 310;
 		
 		//define body
 		BodyDef def1 = new BodyDef();
