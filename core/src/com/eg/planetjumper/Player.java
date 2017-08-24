@@ -5,25 +5,29 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Filter;
+import com.badlogic.gdx.physics.box2d.Joint;
 
 public class Player extends ImageBody
 {
 	private boolean falling;
+	private Joint playerJoint;
 
 	public Player(Body bod, Sprite sprite2) 
 	{
 		super(bod, sprite2);
 		falling = false;
+		setPlayerJoint(null);
+		bod.getFixtureList().get(0).setUserData(this);
 	}
 
 	@Override
 	public void updateAndDraw(SpriteBatch batch) 
 	{
 		//launch player on input
-		if (Gdx.input.isTouched() && PlanetJumper.playerJoint != null)
+		if (Gdx.input.isTouched() && getPlayerJoint() != null)
 		{
-			PlanetJumper.getWorld().destroyJoint(PlanetJumper.playerJoint);
-			PlanetJumper.playerJoint = null;
+			PlanetJumper.getWorld().destroyJoint(getPlayerJoint());
+			setPlayerJoint(null);
 			SoundHandler.getIntance().playJump();
 
 			//set filter to prevent us from getting stuck
@@ -60,6 +64,16 @@ public class Player extends ImageBody
 		
 		super.updateAndDraw(batch);
 		
+	}
+
+	public Joint getPlayerJoint() 
+	{
+		return playerJoint;
+	}
+
+	public void setPlayerJoint(Joint playerJoint)
+	{
+		this.playerJoint = playerJoint;
 	}
 	
 }

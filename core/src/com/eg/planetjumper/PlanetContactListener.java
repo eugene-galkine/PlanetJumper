@@ -13,8 +13,8 @@ public class PlanetContactListener implements ContactListener
 	@Override
 	public void beginContact(Contact contact) 
 	{
-		Fixture fa = contact.getFixtureA();
-		Fixture fb = contact.getFixtureB();
+		final Fixture fa = contact.getFixtureA();
+		final Fixture fb = contact.getFixtureB();
 		
 		if ((fa == null || fb == null) || (fa.getBody() == null || fb.getBody() == null))
 		{
@@ -22,7 +22,7 @@ public class PlanetContactListener implements ContactListener
 			return;
 		}
 		
-		if (fa.getUserData() instanceof PlanetJumper || fb.getUserData() instanceof PlanetJumper)
+		if (fa.getUserData() instanceof Player || fb.getUserData() instanceof Player)
 		{
 			//adds a joint
 			final WeldJointDef j = new WeldJointDef();
@@ -33,19 +33,38 @@ public class PlanetContactListener implements ContactListener
 			
 			//figure out which one is the planet so we can give the player points
 			if (fa.getUserData() instanceof Planet)
+			{
 				((Planet) fa.getUserData()).land();
+			}
 			else if (fb.getUserData() instanceof Planet)
+			{
 				((Planet) fb.getUserData()).land();
+			}
 			
 			//run on ui thread
-			Gdx.app.postRunnable(new Runnable() 
+			if (fa.getUserData() instanceof Player)
 			{
-				@Override
-				public void run() 
+				Gdx.app.postRunnable(new Runnable() 
 				{
-					PlanetJumper.playerJoint = PlanetJumper.getWorld().createJoint(j);
-				}
-			});	
+					@Override
+					public void run() 
+					{
+						((Player) fa.getUserData()).setPlayerJoint(PlanetJumper.getWorld().createJoint(j));
+					}
+				});
+			}
+			else if (fb.getUserData() instanceof Player)
+			{
+				Gdx.app.postRunnable(new Runnable() 
+				{
+					@Override
+					public void run() 
+					{
+						((Player) fb.getUserData()).setPlayerJoint(PlanetJumper.getWorld().createJoint(j));
+					}
+				});	
+				
+			}
 		}	
 	}
 

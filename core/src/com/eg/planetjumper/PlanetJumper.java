@@ -16,7 +16,6 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.Joint;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -28,9 +27,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 
 import box2dLight.RayHandler;
 
-public class PlanetJumper extends ApplicationAdapter {
+public class PlanetJumper extends ApplicationAdapter 
+{
 	public static final float PPM = 20;
-	public static Joint playerJoint = null;
 	
 	private static World world;
 	private static Preferences prefs;
@@ -118,12 +117,35 @@ public class PlanetJumper extends ApplicationAdapter {
 		
 		//create player
 		createPlayer();
+		
+		//restart the game after a several milliseconds to fix a slow down bug on android
+		new Thread()
+		{
+			@Override
+			public void run()
+			{
+				try {
+					sleep(200);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				Gdx.app.postRunnable(new Runnable() 
+				{
+					@Override
+					public void run() 
+					{	
+						resetGame();
+					}
+				});
+			}
+		}.start();
 	}
 
 	void resetGame() 
 	{
-		if (playerJoint != null)
-			world.destroyJoint(playerJoint);
+		if (player.getPlayerJoint() != null)
+			world.destroyJoint(player.getPlayerJoint());
 		
 		//destroy all planets and player
 		for (final ImageBody body : b)
@@ -131,7 +153,6 @@ public class PlanetJumper extends ApplicationAdapter {
 				world.destroyBody(body.getBody());
 		
 		//reset variables
-		playerJoint = null;
 		b.clear();
 		level.reset();
 		ScoreHandler.getInstance().reset();
@@ -169,7 +190,7 @@ public class PlanetJumper extends ApplicationAdapter {
 		
 		//initialize body and fixture
 		Body bod = world.createBody(def1);
-		bod.createFixture(fdef1).setUserData(this);
+		bod.createFixture(fdef1);
 		
 		//add it to list of drawables
 		player = new Player(bod,new Sprite(rocketImage));
@@ -208,8 +229,10 @@ public class PlanetJumper extends ApplicationAdapter {
 			level.update(player.getBody().getPosition().x * PPM);
 		
 			//update camera (only if player wasn't removed
-			camera.position.set(player.getBody().getPosition().x * PPM + Gdx.graphics.getWidth() / 2,
-					player.getBody().getPosition().y * PPM + Gdx.graphics.getHeight() / 2, 0);
+			camera.position.set(
+					player.getBody().getPosition().x * PPM + Gdx.graphics.getWidth() / 1.2f,
+					player.getBody().getPosition().y * PPM + Gdx.graphics.getHeight() / 2, 
+					0);
 			camera.zoom = (player.getBody().getPosition().y > 15f ? (float)Math.pow(player.getBody().getPosition().y - 14f, 1/5f) : 1f) * cameraZoomMod;
 			camera.update();
 			batch.setProjectionMatrix(camera.combined);
@@ -232,7 +255,6 @@ public class PlanetJumper extends ApplicationAdapter {
 	@Override
 	public void dispose () 
 	{
-		prefs.flush();
 		SoundHandler.getIntance().dispose();
 		rayHandler.dispose();
 		ui.dispose();

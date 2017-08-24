@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "452708943144",
+    "firebase_url": "https://planetjumper-c160f.firebaseio.com",
+    "project_id": "planetjumper-c160f",
+    "storage_bucket": "planetjumper-c160f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:452708943144:android:81ea21003b421315",
+        "android_client_info": {
+          "package_name": "com.eg.planetjumper"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "452708943144-8fovblvenr3qc7jcqqbqgpdo0t113aua.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.eg.planetjumper",
+            "certificate_hash": "d9ffb55c5ce155cdd3e9ef107e17bd1c7cd23669"
+          }
+        },
+        {
+          "client_id": "452708943144-0t9ktr2rrk30bnbn6pfcqrqt69nt37aj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCaqE43bEbArKzqtK21cXGtuiw-Wf0q3IY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "452708943144-0t9ktr2rrk30bnbn6pfcqrqt69nt37aj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

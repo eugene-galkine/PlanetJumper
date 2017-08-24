@@ -52,7 +52,7 @@ public class SoundHandler
 	public boolean toggleSound()
 	{
 		muted = !muted;
-		PlanetJumper.getPreferences().putBoolean("planetjumper.muted", muted);
+		PlanetJumper.getPreferences().putBoolean("planetjumper.muted", muted).flush();
 		return muted;
 	}
 
