@@ -6,11 +6,14 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Filter;
 import com.badlogic.gdx.physics.box2d.Joint;
+import com.badlogic.gdx.physics.box2d.JointDef;
 
 public class Player extends ImageBody
 {
 	private boolean falling;
 	private Joint playerJoint;
+	private float releasePos;
+	private float lastScorePos;
 	
 	public Player(Body bod, Sprite sprite2) 
 	{
@@ -18,6 +21,8 @@ public class Player extends ImageBody
 		falling = false;
 		setPlayerJoint(null);
 		bod.getFixtureList().get(0).setUserData(this);
+		releasePos = 0;
+		lastScorePos = 0;
 	}
 
 	@Override
@@ -26,7 +31,8 @@ public class Player extends ImageBody
 		//calculate points for flying over planets
 		if (getPlayerJoint() == null)
 		{
-			
+			ScoreHandler.getInstance().setMultiplier(
+					(int)(((getBody().getPosition().x - releasePos) * PlanetJumper.PPM) / LevelLoader.PLANET_SPACING));
 		}
 		
 		//launch player on input
@@ -79,6 +85,29 @@ public class Player extends ImageBody
 
 	public void setPlayerJoint(Joint playerJoint)
 	{
+		if (playerJoint == null)
+			releasePos = getBody().getPosition().x;
+		
 		this.playerJoint = playerJoint;
+	}
+	
+	public void land(final JointDef j)
+	{
+		//don't give points if we land on the same planet twice, go backwards or on the starting planet
+		if (getBody().getPosition().x > lastScorePos + 20)
+		{
+			ScoreHandler.getInstance().getPoints();
+			lastScorePos = getBody().getPosition().x;
+		}
+		
+		//make the joint on the libgdx thread
+		Gdx.app.postRunnable(new Runnable() 
+		{
+			@Override
+			public void run() 
+			{
+				setPlayerJoint(PlanetJumper.getWorld().createJoint(j));
+			}
+		});	
 	}
 }

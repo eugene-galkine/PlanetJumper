@@ -1,6 +1,5 @@
 package com.eg.planetjumper;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
@@ -31,39 +30,14 @@ public class PlanetContactListener implements ContactListener
 			j.bodyB = fb.getBody();
 			j.initialize(fa.getBody(), fb.getBody(), fa.getBody().getPosition());
 			
-			//figure out which one is the planet so we can give the player points
-			if (fa.getUserData() instanceof Planet)
-			{
-				((Planet) fa.getUserData()).land();
-			}
-			else if (fb.getUserData() instanceof Planet)
-			{
-				((Planet) fb.getUserData()).land();
-			}
-			
-			//run on ui thread
+			//figure out which one is the player so we can give the player points and create the joint
 			if (fa.getUserData() instanceof Player)
 			{
-				Gdx.app.postRunnable(new Runnable() 
-				{
-					@Override
-					public void run() 
-					{
-						((Player) fa.getUserData()).setPlayerJoint(PlanetJumper.getWorld().createJoint(j));
-					}
-				});
+				((Player) fa.getUserData()).land(j);
 			}
 			else if (fb.getUserData() instanceof Player)
 			{
-				Gdx.app.postRunnable(new Runnable() 
-				{
-					@Override
-					public void run() 
-					{
-						((Player) fb.getUserData()).setPlayerJoint(PlanetJumper.getWorld().createJoint(j));
-					}
-				});	
-				
+				((Player) fb.getUserData()).land(j);			
 			}
 		}	
 	}
@@ -71,18 +45,18 @@ public class PlanetContactListener implements ContactListener
 	@Override
 	public void endContact(Contact contact)
 	{
-		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
 	public void preSolve(Contact contact, Manifold oldManifold) 
 	{
-		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
 	public void postSolve(Contact contact, ContactImpulse impulse) 
 	{
-		// TODO Auto-generated method stub
+		
 	}
 }

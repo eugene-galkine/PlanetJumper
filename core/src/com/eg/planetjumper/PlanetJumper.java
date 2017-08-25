@@ -126,8 +126,8 @@ public class PlanetJumper extends ApplicationAdapter
 			{
 				try {
 					sleep(200);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
+				} catch (InterruptedException e) 
+				{
 					e.printStackTrace();
 				}
 				Gdx.app.postRunnable(new Runnable() 

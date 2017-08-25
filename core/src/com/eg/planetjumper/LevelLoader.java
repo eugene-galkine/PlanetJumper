@@ -17,7 +17,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 
 public class LevelLoader
 {
-	private static final int PLANET_SPACING = 1600;
+	public static final int PLANET_SPACING = 1700;
 	private static final int STARTING_PLANETS = 3;
 	
 	private PlanetJumper planet;
@@ -75,10 +75,7 @@ public class LevelLoader
 		bod.setAngularVelocity(velocity);
 		
 		//add it to list of drawables, this first planet should just be an ImageBody so we don't give points for landing on the first planet
-		if (x == 0)
-			planet.addImageBody(new ImageBody(bod,new Sprite(image)));
-		else
-			planet.addImageBody(new Planet(bod,new Sprite(image)));
+		planet.addImageBody(new ImageBody(bod,new Sprite(image)));
 		
 		s1.dispose();
 	}
@@ -106,7 +103,7 @@ public class LevelLoader
 		if (f >= pos)
 		{
 			makeStars(pos + PLANET_SPACING * STARTING_PLANETS);
-			createObject((pos + PLANET_SPACING * STARTING_PLANETS) - (100 + r.nextInt(200)),r.nextInt(300) - 100,(pos + PLANET_SPACING * STARTING_PLANETS) % (PLANET_SPACING*2) == 0);
+			createObject((pos + PLANET_SPACING * STARTING_PLANETS),r.nextInt(300) - 100,(pos + PLANET_SPACING * STARTING_PLANETS) % (PLANET_SPACING*2) == 0);
 			pos += PLANET_SPACING;
 		}
 	}
