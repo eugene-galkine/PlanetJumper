@@ -112,7 +112,7 @@ public class PlanetJumper extends ApplicationAdapter
 		});
 		ui.addActor(btn);
 		ui.addActor(btnM);
-		ui.addActor(ScoreHandler.getInstance().initiate());
+		ScoreHandler.getInstance().initiate(ui);
 		Gdx.input.setInputProcessor(ui);
 		
 		//create player
