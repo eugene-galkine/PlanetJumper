@@ -48,7 +48,17 @@ public class ScoreHandler
 		//give player points
 		SoundHandler.getIntance().playLand();
 		score++;
-		scoreLabel.setText(score + "");
+		
+		//handle highscores
+		if (score > PlanetJumper.getPreferences().getInteger("planetjumper.highscore", 0))
+		{
+			PlanetJumper.getPreferences().putInteger("planetjumper.highscore", score).flush();
+			Label.LabelStyle style = scoreLabel.getStyle();
+			style.fontColor = Color.GOLDENROD;
+			scoreLabel.setStyle(style);
+			scoreLabel.setText("NEW HIGHSCORE: " + score + "!");
+		} else
+			scoreLabel.setText(score + "");
 	}
 
 	public void reset() 
@@ -56,6 +66,9 @@ public class ScoreHandler
 		//reset the score
 		score = 0;
 		scoreLabel.setText(score + "");
+		Label.LabelStyle style = scoreLabel.getStyle();
+		style.fontColor = Color.YELLOW;
+		scoreLabel.setStyle(style);
 	}
 
 }

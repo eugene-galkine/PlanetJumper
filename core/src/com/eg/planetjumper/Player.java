@@ -11,7 +11,7 @@ public class Player extends ImageBody
 {
 	private boolean falling;
 	private Joint playerJoint;
-
+	
 	public Player(Body bod, Sprite sprite2) 
 	{
 		super(bod, sprite2);
@@ -23,6 +23,12 @@ public class Player extends ImageBody
 	@Override
 	public void updateAndDraw(SpriteBatch batch) 
 	{
+		//calculate points for flying over planets
+		if (getPlayerJoint() == null)
+		{
+			
+		}
+		
 		//launch player on input
 		if (Gdx.input.isTouched() && getPlayerJoint() != null)
 		{
@@ -75,5 +81,4 @@ public class Player extends ImageBody
 	{
 		this.playerJoint = playerJoint;
 	}
-	
 }
