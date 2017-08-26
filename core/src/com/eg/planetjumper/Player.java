@@ -94,7 +94,7 @@ public class Player extends ImageBody
 	public void land(final JointDef j)
 	{
 		//don't give points if we land on the same planet twice, go backwards or on the starting planet
-		if (getBody().getPosition().x > lastScorePos + 20)
+		if (getBody().getPosition().x > lastScorePos + 0)
 		{
 			ScoreHandler.getInstance().getPoints();
 			lastScorePos = getBody().getPosition().x;
@@ -107,6 +107,7 @@ public class Player extends ImageBody
 			public void run() 
 			{
 				setPlayerJoint(PlanetJumper.getWorld().createJoint(j));
+				ScoreHandler.getInstance().setMultiplier(0);
 			}
 		});	
 	}

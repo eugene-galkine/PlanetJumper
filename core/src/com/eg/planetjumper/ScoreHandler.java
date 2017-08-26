@@ -16,6 +16,7 @@ public class ScoreHandler
 	private int score;
 	private Label scoreLabel;
 	private Label highscoreLabel;
+	private Label multiplierLabel;
 	private int multiplier;
 	
 	private ScoreHandler()
@@ -30,12 +31,12 @@ public class ScoreHandler
 	
 	public void initiate(Stage ui)
 	{
-		//set up the label
+		//set up the labels
 		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fabrik.ttf"));
 		FreeTypeFontParameter parameter = new FreeTypeFontParameter();
 		parameter.size = Gdx.graphics.getWidth() / 18;
 		BitmapFont font = generator.generateFont(parameter);
-		generator.dispose(); // don't forget to dispose to avoid memory leaks!
+		generator.dispose();
 		
 		Label.LabelStyle style = new Label.LabelStyle();
 		style.font = font;
@@ -44,15 +45,21 @@ public class ScoreHandler
 		scoreLabel.setPosition((Gdx.graphics.getWidth() / 2) - (scoreLabel.getWidth() / 2), Gdx.graphics.getHeight() - (scoreLabel.getHeight() * 2));
 		scoreLabel.setAlignment(Align.center);
 
-		Label.LabelStyle style1 = new Label.LabelStyle();
-		style1.font = font;
+		Label.LabelStyle style1 = new Label.LabelStyle(style);
 		style1.fontColor = Color.WHITE;
 		highscoreLabel = new Label("Highscore: " + PlanetJumper.getPreferences().getInteger("planetjumper.highscore", 0), style1);
 		highscoreLabel.setPosition(Gdx.graphics.getWidth() - highscoreLabel.getWidth() - (Gdx.graphics.getWidth()/15) - 10, Gdx.graphics.getHeight() - highscoreLabel.getHeight());
 		highscoreLabel.setAlignment(Align.topRight);
 		
+		Label.LabelStyle style2 = new Label.LabelStyle(style);
+		style2.fontColor = Color.CHARTREUSE;
+		multiplierLabel = new Label("", style2);
+		multiplierLabel.setPosition(Gdx.graphics.getWidth() / 3, Gdx.graphics.getHeight() / 2);
+		multiplierLabel.setAlignment(Align.center);
+		
 		ui.addActor(scoreLabel);
 		ui.addActor(highscoreLabel);
+		ui.addActor(multiplierLabel);
 	}
 	
 	public void getPoints()
@@ -62,7 +69,7 @@ public class ScoreHandler
 		score += 1 * multiplier;
 		multiplier = 1;
 		scoreLabel.setText(score + "");
-		
+		multiplierLabel.setText("");
 		//handle highscores
 		if (score > PlanetJumper.getPreferences().getInteger("planetjumper.highscore", 0))
 		{
@@ -81,6 +88,7 @@ public class ScoreHandler
 		score = 0;
 		scoreLabel.setText(score + "");
 		highscoreLabel.setText("Highscore: " + PlanetJumper.getPreferences().getInteger("planetjumper.highscore", 0));
+		multiplierLabel.setText("");
 		Label.LabelStyle style = highscoreLabel.getStyle();
 		style.fontColor = Color.WHITE;
 		highscoreLabel.setStyle(style);
@@ -89,5 +97,6 @@ public class ScoreHandler
 	public void setMultiplier(int mult)
 	{
 		multiplier = mult + 1;
+		multiplierLabel.setText(multiplier > 1 ? multiplier + "x" : "");
 	}
 }

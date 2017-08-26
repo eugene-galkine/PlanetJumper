@@ -233,7 +233,7 @@ public class PlanetJumper extends ApplicationAdapter
 					player.getBody().getPosition().x * PPM + Gdx.graphics.getWidth() / 1.2f,
 					player.getBody().getPosition().y * PPM + Gdx.graphics.getHeight() / 2, 
 					0);
-			camera.zoom = (player.getBody().getPosition().y > 15f ? (float)Math.pow(player.getBody().getPosition().y - 14f, 1/5f) : 1f) * cameraZoomMod;
+			camera.zoom = (player.getBody().getPosition().y > 40f ? (float)Math.pow(player.getBody().getPosition().y - 39f, 1/8f) : 1f) * cameraZoomMod;
 			camera.update();
 			batch.setProjectionMatrix(camera.combined);
 		}
