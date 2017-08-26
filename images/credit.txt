@@ -1,10 +1,19 @@
+A relaxing endless runner where you jump from planet to planet as a cute UFO. Let go of the spinning planet by tapping on the screen at the right time so your momentum can carry you to the next one. Be careful not to fall down into the dark abyss!
+
+How far can you go?
+
+
+
+Credits:
+Powered by LibGDX
+
 Planet images were made by Viktor Hahn (Viktor.Hahn@web.de) and are licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License. http://creativecommons.org/licenses/by-sa/3.0/
 https://opengameart.org/content/15-planet-sprites
 
-space ship
-http://bevouliin.com/
+Player image was made by bevouliin.com and is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License. 
+http://creativecommons.org/licenses/by-sa/3.0/
 
-icons
+Thanks to Icons8 for the in game icons
 https://icons8.com/icon/9982/audio
 https://icons8.com/icon/9976/mute
 https://icons8.com/icon/9973/restart
