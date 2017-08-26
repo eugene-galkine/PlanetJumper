@@ -65,20 +65,22 @@ public class ScoreHandler
 	public void getPoints()
 	{
 		//give player points
-		SoundHandler.getIntance().playLand();
 		score += 1 * multiplier;
 		multiplier = 1;
 		scoreLabel.setText(score + "");
 		multiplierLabel.setText("");
+		
 		//handle highscores
 		if (score > PlanetJumper.getPreferences().getInteger("planetjumper.highscore", 0))
 		{
+			SoundHandler.getIntance().playHighscore();
 			PlanetJumper.getPreferences().putInteger("planetjumper.highscore", score).flush();
 			Label.LabelStyle style = highscoreLabel.getStyle();
 			style.fontColor = Color.GOLDENROD;
 			highscoreLabel.setStyle(style);
 			highscoreLabel.setText("NEW HIGHSCORE: " + score + "!");
-		}
+		} else
+			SoundHandler.getIntance().playLand();
 	}
 
 	public void reset() 
@@ -96,6 +98,9 @@ public class ScoreHandler
 
 	public void setMultiplier(int mult)
 	{
+		if (mult > 0 && mult + 1 != multiplier)
+			SoundHandler.getIntance().playMultiplier();
+		
 		multiplier = mult + 1;
 		multiplierLabel.setText(multiplier > 1 ? multiplier + "x" : "");
 	}
